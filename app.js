@@ -12,7 +12,7 @@ client.connect();
 
 app.set('port', process.env.PORT || 4000);
 
-app.get('/', (req, res, next) => {
+app.get('/get_user', (req, res, next) => {
   client.query('SELECT * FROM users', (err, result) => {
     if (err) {
       console.log(err);
@@ -23,3 +23,5 @@ app.get('/', (req, res, next) => {
 
 // app.get('/', (req, res) => res.json({ message: 'Hello World' }));
 app.listen(4000, () => console.log(`Example app listening on port 4000!`));
+
+module.exports = app;
