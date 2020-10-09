@@ -34,6 +34,19 @@ app.post('/add_user', async (request, response) => {
   );
 });
 
+app.put('/update_user', async (request, response) => {
+  const { id, name, password } = request.body;
+
+  client.query(
+    'UPDATE public.users SET name = $2, password = $3 WHERE id = $1',
+    [id, name, password],
+    (error, result) => {
+      if (error) console.log(error);
+      else response.status(201).send(`User added with ID: ${result.insertId}`);
+    },
+  );
+});
+
 // app.get('/', (req, res) => res.json({ message: 'Hello World' }));
 app.listen(4000, () => console.log(`Example app listening on port 4000!`));
 
