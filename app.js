@@ -1,53 +1,27 @@
-const express = require('express');
-const app = express();
-const { Client } = require('pg');
-const connectionString = 'postgres://postgres:postgres@localhost:5432/postgres';
-app.use(express.json());
+var express = require("express");
+var bodyParser = require('body-parser');
+var app = express();
+var http = require('http');
+var config = require('./config');
+const mountRoutes = require('./routes');
+var cors = require("cors");
+var helmet = require("helmet");
 
-const client = new Client({
-  connectionString: connectionString,
+//const readLog = require('./readlog');
+
+app.use(cors());
+app.use(helmet());
+
+
+app.use(bodyParser.urlencoded({
+      extended: false
+}));
+
+app.use(bodyParser.json());
+
+http.createServer(app).listen(config.LISTEN_PORT, () => {
+      console.log('listening on port ' + config.LISTEN_PORT);
 });
 
-client.connect();
 
-app.set('port', process.env.PORT || 4000);
-
-app.get('/get_user', (req, res, next) => {
-  client.query('SELECT * FROM users', (err, result) => {
-    if (err) {
-      console.log(err);
-    }
-    res.status(200).send(result.rows);
-  });
-});
-
-app.post('/add_user', async (request, response) => {
-  const { name, password } = request.body;
-
-  client.query(
-    'INSERT INTO public.users (name, password) VALUES ($1, $2)',
-    [name, password],
-    (error, result) => {
-      if (error) console.log(error);
-      else response.status(201).send(`User added with ID: ${result.insertId}`);
-    },
-  );
-});
-
-app.put('/update_user', async (request, response) => {
-  const { id, name, password } = request.body;
-
-  client.query(
-    'UPDATE public.users SET name = $2, password = $3 WHERE id = $1',
-    [id, name, password],
-    (error, result) => {
-      if (error) console.log(error);
-      else response.status(201).send(`User added with ID: ${result.insertId}`);
-    },
-  );
-});
-
-// app.get('/', (req, res) => res.json({ message: 'Hello World' }));
-app.listen(4000, () => console.log(`Example app listening on port 4000!`));
-
-module.exports = app;
+mountRoutes(app)
