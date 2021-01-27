@@ -1,6 +1,5 @@
 const user = require("./user");
 const cards = require("./cards");
-const admin = require("./admin")
 var jwt = require("jsonwebtoken");
 var moment = require("moment");
 const config = require("../config");
@@ -43,5 +42,4 @@ function VerifyToken(req, res, next) {
 module.exports = (app) => {
   app.use('/user', user);
   app.use('/cards', VerifyToken, cards);
-  app.use('/admin', VerifyToken,admin)
 };
